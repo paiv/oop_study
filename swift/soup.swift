@@ -61,20 +61,51 @@ class Vendor1 : Vendor {
   }
 }
 
+// type erasure; see http://stackoverflow.com/a/37360490
+
+#if false
+
+struct ControllerOps {
+  let dev: Device
+  func op1(param: Int) -> Void {
+    dev.op1(param: param * param)
+  }
+}
 
 protocol Controller {
-  func run(param: Int) -> Int
+  var ops: ControllerOps { get }
+}
+
+#else
+
+struct ControllerOps : Device {
+  let dev: Device
+  func op1(param: Int) -> Void {
+    dev.op1(param: param * param)
+  }
+}
+
+protocol Controller {
+  associatedtype DeviceType: Device
+  var ops: DeviceType { get }
+}
+
+#endif
+
+extension Controller {
+  func foo(param: Int) {
+    ops.op1(param: param)
+  }
 }
 
 
 class ControllerA : Controller {
   let dev: DeviceA
+  let ops: ControllerOps
+
   init(dev: DeviceA) {
     self.dev = dev
-  }
-
-  func foo(param: Int) -> Void {
-    dev.op1(param: param * param)
+    ops = ControllerOps(dev: dev)
   }
 
   func run(param: Int) -> Int {
@@ -85,12 +116,11 @@ class ControllerA : Controller {
 
 class ControllerB : Controller {
   let dev: DeviceB
+  let ops: ControllerOps
+
   init(dev: DeviceB) {
     self.dev = dev
-  }
-
-  func foo(param: Int) -> Void {
-    dev.op1(param: param * param)
+    ops = ControllerOps(dev: dev)
   }
 
   func run(param: Int) -> Int {
@@ -110,7 +140,6 @@ func RunDevices(init1: Int, init2: Int, param: Int) -> Int {
 
   ctlA.foo(param: init1)
   ctlB.foo(param: init2)
-
   return ctlB.run(param: ctlA.run(param: param))
 }
 

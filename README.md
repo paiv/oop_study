@@ -2,7 +2,10 @@
 OOP Study
 =========
 
-Task: make an app that controls two devices, `Device A` and `Device B`,
+Task
+----
+
+Make an app that controls two devices, `Device A` and `Device B`,
 via corresponding controllers, `Controller A` and `Controller B`.
 There might be many vendors for `Device A`, as well as for `Device B`.
 
