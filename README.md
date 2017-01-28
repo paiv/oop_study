@@ -29,6 +29,6 @@ Controller B:
 - run(param): device.op2(param, param)
 
 App:
-- controllerA.init(13)
-- controllerB.init(15)
+- controllerA.foo(13)
+- controllerB.foo(15)
 - controllerB.run( controllerA.run(42) )
