@@ -34,11 +34,10 @@ class Vendor1 : Vendor {
     }
 
     func op1(param: Int) -> Void {
-      x = param
+      x += param
     }
 
     func op2(param: Int) -> Int {
-      x += 1
       return x
     }
   }
@@ -55,58 +54,27 @@ class Vendor1 : Vendor {
     }
 
     func op2(x: Int, y: Int) -> Int {
-      self.x = self.x * x + y
-      return self.x
+      return self.x * x + y
     }
   }
 }
 
-// type erasure; see http://stackoverflow.com/a/37360490
-
-#if false
-
-struct ControllerOps {
-  let dev: Device
-  func op1(param: Int) -> Void {
-    dev.op1(param: param * param)
-  }
-}
 
 protocol Controller {
-  var ops: ControllerOps { get }
+  var device: Device { get }
 }
-
-#else
-
-struct ControllerOps : Device {
-  let dev: Device
-  func op1(param: Int) -> Void {
-    dev.op1(param: param * param)
-  }
-}
-
-protocol Controller {
-  associatedtype DeviceType: Device
-  var ops: DeviceType { get }
-}
-
-#endif
 
 extension Controller {
   func foo(param: Int) {
-    ops.op1(param: param)
+    device.op1(param: param * param)
   }
 }
 
 
-class ControllerA : Controller {
+struct ControllerA : Controller {
   let dev: DeviceA
-  let ops: ControllerOps
 
-  init(dev: DeviceA) {
-    self.dev = dev
-    ops = ControllerOps(dev: dev)
-  }
+  var device: Device { get { return dev } }
 
   func run(param: Int) -> Int {
     return dev.op2(param: param)
@@ -114,14 +82,10 @@ class ControllerA : Controller {
 }
 
 
-class ControllerB : Controller {
+struct ControllerB : Controller {
   let dev: DeviceB
-  let ops: ControllerOps
 
-  init(dev: DeviceB) {
-    self.dev = dev
-    ops = ControllerOps(dev: dev)
-  }
+  var device: Device { get { return dev } }
 
   func run(param: Int) -> Int {
     return dev.op2(x: param, y: param)
