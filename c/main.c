@@ -11,8 +11,8 @@ int RunDevices(int init1, int init2, int param) {
   DeviceA* devA = vendor1->createDeviceA(vendor1, 1);
   DeviceB* devB = vendor1->createDeviceB(vendor1, 2);
 
-  ControllerA_foo(devA, init1);
-  ControllerB_foo(devB, init2);
+  Controller_foo((Device*)devA, init1);
+  Controller_foo((Device*)devB, init2);
 
   int x = ControllerA_run(devA, param);
   int res = ControllerB_run(devB, x);
